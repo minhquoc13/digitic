@@ -10,8 +10,13 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 // import router
 const authRoute = require("./routes/authRoute");
+const { notFound, errorHandler } = require("./middlewares/errorHandler");
+// import middlewares
 
 app.use("/api/user", authRoute);
+
+app.use(notFound);
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Server is running on PORT ${PORT}`);
