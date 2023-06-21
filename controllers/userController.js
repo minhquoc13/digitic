@@ -24,7 +24,7 @@ const loginUser = asyncHandler(async (req, res) => {
   // Check if user exitst or not
   const findUser = await User.findOne({ email });
   if (findUser && (await findUser.isPasswordMatched(password))) {
-    const refreshToken = await generateRefreshToken(findUser?._id);
+    const refreshToken = generateRefreshToken(findUser?._id);
     const updateUser = await User.findByIdAndUpdate(
       findUser.id,
       {
