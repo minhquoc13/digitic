@@ -18,11 +18,13 @@ app.use(cookieParser());
 // import router
 const authRoute = require("./routes/authRoute");
 const productRoute = require("./routes/productRoute");
+const blogRoute = require("./routes/blogRoute");
 const { notFound, errorHandler } = require("./middlewares/errorHandler");
 // import middlewares
 
 app.use("/api/user", authRoute);
 app.use("/api/product", productRoute);
+app.use("/api/blog", blogRoute);
 
 app.use(notFound);
 app.use(errorHandler);
