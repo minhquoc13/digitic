@@ -50,6 +50,38 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 });
 
+// login admin
+const loginAdmin = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+  // Check if user exitst or not
+  const findAdmin = await User.findOne({ email });
+  if (findAdmin.role !== "admin") throw new Error("No authorised");
+  if (findAdmin && (await findAdmin.isPasswordMatched(password))) {
+    const refreshToken = generateRefreshToken(findAdmin?._id);
+    const updateUser = await User.findByIdAndUpdate(
+      findAdmin.id,
+      {
+        refreshToken: refreshToken,
+      },
+      { new: true }
+    );
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      maxAge: 72 * 60 * 60 * 1000,
+    });
+    res.json({
+      _id: findAdmin?._id,
+      firstName: findAdmin?.firstName,
+      lastName: findAdmin?.lastName,
+      email: findAdmin?.email,
+      mobile: findAdmin?.mobile,
+      token: generateToken(findAdmin?._id),
+    });
+  } else {
+    throw new Error("Invalid Credentials");
+  }
+});
+
 // handle refresh token
 const handleRefreshToken = asyncHandler(async (req, res) => {
   const cookie = req.cookies;
@@ -227,6 +259,47 @@ const resetPassword = asyncHandler(async (req, res) => {
   res.json(user);
 });
 
+const addToWishList = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  const { productId } = req.body;
+  try {
+    let user = await User.findById(_id);
+    const alreadyAdded = user.wishList.find(
+      (id) => id.toString() === productId
+    );
+    if (alreadyAdded) {
+      user = await User.findByIdAndUpdate(
+        _id,
+        {
+          $pull: { wishList: productId },
+        },
+        { new: true }
+      );
+    } else {
+      user = await User.findByIdAndUpdate(
+        _id,
+        {
+          $push: { wishList: productId },
+        },
+        { new: true }
+      );
+    }
+    res.json(user);
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+const getWishList = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  console.log("a");
+  try {
+    const findUser = await User.findById(_id).populate("wishList");
+    res.json(findUser);
+  } catch (err) {
+    throw new Error(err);
+  }
+});
 module.exports = {
   createUser,
   loginUser,
@@ -241,4 +314,7 @@ module.exports = {
   updatePassword,
   forgotPasswordToken,
   resetPassword,
+  loginAdmin,
+  addToWishList,
+  getWishList,
 };
