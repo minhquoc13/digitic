@@ -26,10 +26,10 @@ var orderSchema = new mongoose.Schema(
         "Delivered",
         "Delivering",
       ],
-      orderBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
+    },
+    orderBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
     },
   },
   { timestamps: true }
