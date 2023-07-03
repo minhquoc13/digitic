@@ -23,8 +23,11 @@ const productCategoryRoute = require("./routes/productCategoryRoute");
 const blogCategoryRoute = require("./routes/blogCategoryRoute");
 const brandRoute = require("./routes/brandRoute");
 const couponRoute = require("./routes/couponRoute");
-const { notFound, errorHandler } = require("./middlewares/errorHandler");
+const colorRoute = require("./routes/colorRoute");
+const enquiryRoute = require("./routes/enquiryRoute");
+
 // import middlewares
+const { notFound, errorHandler } = require("./middlewares/errorHandler");
 
 app.use("/api/user", authRoute);
 app.use("/api/product", productRoute);
@@ -33,6 +36,8 @@ app.use("/api/category", productCategoryRoute);
 app.use("/api/blog-category", blogCategoryRoute);
 app.use("/api/brand", brandRoute);
 app.use("/api/coupon", couponRoute);
+app.use("/api/color", colorRoute);
+app.use("/api/enquiry", enquiryRoute);
 
 app.use(notFound);
 app.use(errorHandler);
